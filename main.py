@@ -54,10 +54,10 @@ def main():
                      'Threat Analysis On Vulnerable Modules',
                      'Disaster Recovery'
                      ]
-    for name in section_names:
-        for section in section_list:
-            print(name)
-            input_data(section)
+
+    for i in range(0, len(section_list)):
+        print('*** ' + section_names[i] + ' ***')
+        input_data(section_list[i])
 
 
 def input_data(section):
@@ -67,8 +67,8 @@ def input_data(section):
                 print('    ' + cell.coordinate, cell.value)
             else:
                 print('    ' + cell.coordinate + ' None')
-
-        print('-- END OF ROW --')
+        print('----------------------------------------------------------------------')
+    print()
 
 
 
