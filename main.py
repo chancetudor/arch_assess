@@ -25,7 +25,8 @@ def main():
     threat_analysis = tuple(a_sheet['A72':'C79'])
     disaster_recov = tuple(a_sheet['A81':'C82'])
     # list of section tuples
-    section_list = [gen_app_sec,
+    section_list = [
+                    gen_app_sec,
                     info_class,
                     sys_arch,
                     access_control,
@@ -39,18 +40,34 @@ def main():
                     threat_analysis,
                     disaster_recov
                     ]
-    for section in section_list:
-        input_data(section)
+    section_names = ['General Application Security',
+                     'Information Classification',
+                     'System Architecture',
+                     'Access Control',
+                     'Data and Transaction Controls',
+                     'Database Controls',
+                     'Software and Proprietary and Code Control',
+                     'Confidentiality',
+                     'User Accounts and Password Control',
+                     'Testing Controls',
+                     'STRIDE Adherence',
+                     'Threat Analysis On Vulnerable Modules',
+                     'Disaster Recovery'
+                     ]
+    for name in section_names:
+        for section in section_list:
+            print(name)
+            input_data(section)
 
 
-def input_data(sheet):
-    r = 2
-    col = 1
-    print(sheet.cell(row=r, column=col).value)
-
-    for row in gen_app_sec:
+def input_data(section):
+    for row in section:
         for cell in row:
-            print('    ' + cell.coordinate, cell.value)
+            if cell.value is not None:
+                print('    ' + cell.coordinate, cell.value)
+            else:
+                print('    ' + cell.coordinate + ' None')
+
         print('-- END OF ROW --')
 
 
