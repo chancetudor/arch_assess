@@ -24,8 +24,7 @@ def main():
     stride = tuple(a_sheet['A65':'C70'])
     threat_analysis = tuple(a_sheet['A72':'C79'])
     disaster_recov = tuple(a_sheet['A81':'C82'])
-    # list of section tuples
-    section_list = [
+    '''section_list = [
                     gen_app_sec,
                     info_class,
                     sys_arch,
@@ -39,8 +38,9 @@ def main():
                     stride,
                     threat_analysis,
                     disaster_recov
-                    ]
-    section_names = ['General Application Security',
+                    ]'''
+
+    '''section_names = ['General Application Security',
                      'Information Classification',
                      'System Architecture',
                      'Access Control',
@@ -53,11 +53,30 @@ def main():
                      'STRIDE Adherence',
                      'Threat Analysis On Vulnerable Modules',
                      'Disaster Recovery'
-                     ]
+                     ]'''
 
-    for i in range(0, len(section_list)):
+    '''for i in range(0, len(section_list)):
         print('*** ' + section_names[i] + ' ***')
-        input_data(section_list[i])
+        input_data(section_list[i])'''
+    # dict of section tuples
+    # sectionName : sectionTuple
+    section_list = {
+        'General Application Security': gen_app_sec,
+        'Information Classification': info_class,
+        'System Architecture': sys_arch,
+        'Access Control': access_control,
+        'Data and Transaction Controls': data_trans_control,
+        'Database Controls': db_control,
+        'Software and Proprietary and Code Control': code_control,
+        'Confidentiality': confidentiality,
+        'User Accounts and Password Control': pw_control,
+        'Testing Controls': testing_control,
+        'STRIDE Adherence': stride,
+        'Threat Analysis On Vulnerable Modules': threat_analysis,
+        'Disaster Recovery': disaster_recov
+    }
+    for k, v in section_list.items():
+        print('*** ' + k + ' ***')
 
 
 def input_data(section):
@@ -69,7 +88,6 @@ def input_data(section):
                 print('    ' + cell.coordinate + ' None')
         print('----------------------------------------------------------------------')
     print()
-
 
 
 def change_cwd():
@@ -95,9 +113,6 @@ def get_workbook(fn):
     except openpyxl.utils.exceptions.SheetTitleException:
         print("Error: cannot find workbook ", fn)
         sys.exit(-1)
-
-
-
 
 
 if __name__ == '__main__':
