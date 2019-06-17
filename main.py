@@ -2,6 +2,7 @@
 import os, sys
 import directory
 import openpyxl
+from openpyxl.styles import Font
 from openpyxl import utils
 from openpyxl.utils import exceptions
 
@@ -51,9 +52,11 @@ def main():
     # calc total rating
     final_rating = calc_rating(section_rating)
     a_sheet['C84'] = final_rating
+    a_sheet['C84'].font = Font(bold=True)
     # calc net score percentage
     net_score = (final_rating / 315) * 100
     a_sheet['C85'] = net_score
+    a_sheet['C85'].font = Font(bold=True)
     # saving edited workbook as a copy
     print('Enter a new name for this document.')
     copy_name = get_filename()
@@ -82,7 +85,11 @@ def input_data(section):
             else:
                 print('    ' + 'Enter your rating (0-5):')
                 rating = input('      ' + '--')
+                if float(rating) < 0.0 or float(rating) > 5.0:
+                    print('    ' + 'Please enter a number between 0-5:')
+                    rating = input('      ' + '--')
                 cell.value = float(rating)
+                cell.font = Font(bold=True)
                 total = total + float(rating)
         print('----------------------------------------------------------------------')
     return total
