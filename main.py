@@ -48,7 +48,7 @@ def main():
     for k, v in section_list.items():
         print('*** ' + k + ' ***')  # section name
         rating = input_data(v)  # section tuple
-        section_rating.append(rating)
+        section_rating.append(rating)  # keep track of total section rating for subsequent processing
     # calc total rating
     final_rating = calc_rating(section_rating)
     a_sheet['C84'] = final_rating
@@ -83,16 +83,22 @@ def input_data(section):
                     else:
                         print('    ' + cell.coordinate + ' None')
             else:
-                print('    ' + 'Enter your rating (0-5):')
-                rating = input('      ' + '--')
-                if float(rating) < 0.0 or float(rating) > 5.0:
-                    print('    ' + 'Please enter a number between 0-5:')
-                    rating = input('      ' + '--')
+                rating = get_rating()
+                while float(rating) < 0.0 or float(rating) > 5.0:
+                    print('ERROR: Please enter a decimal value between 0-5')
+                    rating = get_rating()
+                # assign rating to cell
                 cell.value = float(rating)
                 cell.font = Font(bold=True)
                 total = total + float(rating)
         print('----------------------------------------------------------------------')
     return total
+
+
+def get_rating():
+    print('    ' + 'Enter your rating (0-5):')
+    rating = input('      ' + '--')
+    return rating
 
 
 def change_cwd():
