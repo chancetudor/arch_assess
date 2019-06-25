@@ -129,10 +129,6 @@ def change_cwd():
         print("Directory changed.")
     except OSError:
         print("Error: unable to change CWD.")
-    '''else:
-        print('Making new directory ' + str(new_directory))
-        os.mkdir(str(new_directory))
-        os.chdir(str(new_directory))'''
 
 
 def get_filename():
