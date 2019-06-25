@@ -1,5 +1,6 @@
 #! python3
-import os, sys
+import os, sys, getpass
+from pathlib import Path
 import directory
 import openpyxl
 from openpyxl.styles import Font
@@ -47,14 +48,17 @@ def main():
     # inputting data
     for k, v in section_list.items():
         print('*** ' + k + ' ***')  # section name
-        rating = input_data(v)  # section tuple
-        section_rating.append(rating)  # keep track of total section rating for subsequent processing
+        rating_count = input_data(v, a_sheet)  # section tuple
+        section_rating.append(rating_count)  # keep track of total section rating, count of subsection ratings
     # calc total rating
     final_rating = calc_rating(section_rating)
-    a_sheet['C84'] = final_rating
+    score = final_rating[0]
+    count = final_rating[1]
+    a_sheet['C84'] = score
     a_sheet['C84'].font = Font(bold=True)
     # calc net score percentage
-    net_score = (final_rating / 315) * 100
+    print(count)
+    net_score = (score / (count * 5)) * 100
     a_sheet['C85'] = net_score
     a_sheet['C85'].font = Font(bold=True)
     # saving edited workbook as a copy
@@ -65,13 +69,16 @@ def main():
 
 def calc_rating(section_rating):
     total = 0
+    count = 0
     for rating in section_rating:
-        total += rating
-    return total
+        total = total + rating[0]
+        count = count + rating[1]
+    return total, count
 
 
-def input_data(section):
+def input_data(section, sheet):
     total = 0
+    count = 0
     for row in section:
         for cell in row:
             if cell.coordinate[0] != 'C':
@@ -85,18 +92,35 @@ def input_data(section):
             else:
                 rating = get_rating()
                 while float(rating) < 0.0 or float(rating) > 5.0:
-                    print('ERROR: Please enter a decimal value between 0-5')
+                    print('ERROR: Please enter a decimal value between 1-5; 0 if N/A')
                     rating = get_rating()
                 # assign rating to cell
                 cell.value = float(rating)
                 cell.font = Font(bold=True)
                 total = total + float(rating)
+                if float(rating) != 0:
+                    count = count + 1
+                # get comment, if user wants to leave one
+                get_comment(sheet, cell)
         print('----------------------------------------------------------------------')
-    return total
+    return total, count
+
+
+def get_comment(sheet, cell):
+    print('    ' + 'Would you like to enter a comment regarding this rating? (Y/N)')
+    ans = input('      ' + '--')
+    if ans is 'Y' or ans is 'y':
+        print('      ' + 'Enter your comment:')
+        comment = input('        ' + '--')
+        comment_col = 5  # 'E'
+        comment_row = cell.row
+        sheet.cell(comment_row, comment_col).value = comment
+    else:
+        return
 
 
 def get_rating():
-    print('    ' + 'Enter your rating (0-5):')
+    print('    ' + 'Enter your rating (1-5); Enter 0 if N/A:')
     rating = input('      ' + '--')
     return rating
 
