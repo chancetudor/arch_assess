@@ -1,7 +1,5 @@
 #! python3
-import os, sys, getpass
-from pathlib import Path
-import directory
+import os, sys, pathlib
 import openpyxl
 from openpyxl.styles import Font
 from openpyxl import utils
@@ -57,7 +55,6 @@ def main():
     a_sheet['C84'] = score
     a_sheet['C84'].font = Font(bold=True)
     # calc net score percentage
-    print(count)
     net_score = (score / (count * 5)) * 100
     a_sheet['C85'] = net_score
     a_sheet['C85'].font = Font(bold=True)
@@ -126,12 +123,16 @@ def get_rating():
 
 
 def change_cwd():
-    print('Changing CWD to ' + directory.directory)
+    new_directory = pathlib.Path.home() / 'Documents' / 'ArchitectureAssessments'
     try:
-        os.chdir(directory.directory)
+        os.chdir(str(new_directory))
         print("Directory changed.")
     except OSError:
         print("Error: unable to change CWD.")
+    '''else:
+        print('Making new directory ' + str(new_directory))
+        os.mkdir(str(new_directory))
+        os.chdir(str(new_directory))'''
 
 
 def get_filename():
