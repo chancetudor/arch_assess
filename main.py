@@ -58,10 +58,27 @@ def main():
     net_score = (score / (count * 5)) * 100
     a_sheet['C85'] = net_score
     a_sheet['C85'].font = Font(bold=True)
+    # set risk status based on net score
+    set_risk(a_sheet, net_score)
     # saving edited workbook as a copy
     print('Enter a new name for this document.')
     copy_name = get_filename()
     wb.save(copy_name)
+
+
+def set_risk(a_sheet, net_score):
+    if net_score >= 90:  # no remediation necessary
+        a_sheet['C86'] = 'Very Low'
+        a_sheet['C86'].font = Font(bold=True)
+    elif 80 <= net_score < 90:  # some remediation necessary
+        a_sheet['C86'] = 'Medium'
+        a_sheet['C86'].font = Font(bold=True)
+    elif 60 <= net_score < 80:  # good amount of remediation necessary
+        a_sheet['C86'] = 'High'
+        a_sheet['C86'].font = Font(bold=True)
+    else:  # lots of remediation necessary
+        a_sheet['C86'] = 'Very High'
+        a_sheet['C86'].font = Font(bold=True)
 
 
 def calc_rating(section_rating):
