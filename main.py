@@ -2,13 +2,11 @@
 import os, sys, pathlib
 import openpyxl
 from openpyxl.styles import Font
-from openpyxl import utils
-from openpyxl.utils import exceptions
 
 
 def main():
     change_cwd()
-    name = get_filename()
+    name = get_filename(1)
     wb = get_workbook(name)
     a_sheet = wb.active
     # generating tuples for specific sections
@@ -52,6 +50,7 @@ def main():
     final_rating = calc_rating(section_rating)
     score = final_rating[0]
     count = final_rating[1]
+    # set score and bold font
     a_sheet['C84'] = score
     a_sheet['C84'].font = Font(bold=True)
     # calc net score percentage
@@ -62,7 +61,7 @@ def main():
     set_risk(a_sheet, net_score)
     # saving edited workbook as a copy
     print('Enter a new name for this document.')
-    copy_name = get_filename()
+    copy_name = get_filename(0)
     wb.save(copy_name)
 
 
@@ -105,14 +104,10 @@ def input_data(section, sheet):
                         print('    ' + cell.coordinate + ' None')
             else:
                 rating = get_rating()
-                while float(rating) < 0.0 or float(rating) > 5.0:
-                    print('ERROR: Please enter a decimal value between 1-5; 0 if N/A')
-                    rating = get_rating()
-                # assign rating to cell
-                cell.value = float(rating)
+                cell.value = rating
                 cell.font = Font(bold=True)
-                total = total + float(rating)
-                if float(rating) != 0:
+                total = total + rating
+                if rating != 0:
                     count = count + 1
                 # get comment, if user wants to leave one
                 get_comment(sheet, cell)
@@ -135,7 +130,18 @@ def get_comment(sheet, cell):
 
 def get_rating():
     print('    ' + 'Enter your rating (1-5); Enter 0 if N/A:')
-    rating = input('      ' + '--')
+    error_msg = 'ERROR: Please enter a decimal value between 1-5; 0 if N/A'.rjust(4)
+    rating = 0.0
+    while True:
+        try:
+            rating = float(input('      ' + '--'))
+        except ValueError:
+            print(error_msg)
+            continue
+        if rating < 0.0 or rating > 5.0:
+            print(error_msg)
+        else:
+            break
     return rating
 
 
@@ -148,20 +154,42 @@ def change_cwd():
         print("Error: unable to change CWD.")
 
 
-def get_filename():
+def get_filename(flag):
     print("What is the name of the .xlsx document?")
-    name = input('--')
-    name = name + '.xlsx'
+    name = ''
+    error_msg = 'ERROR: please enter a filename'
+    while True:
+        try:
+            user_in = input('--')
+            name = user_in + '.xlsx'
+            # flag is set, so this is when user is loading file
+            # must check to see if filename will cause program to crash
+            if flag == 1:
+                try:
+                    openpyxl.load_workbook(name)
+                except FileNotFoundError:
+                    print('Error: workbook unable to be found with filename ' + name)
+                    print('Please try entering the filename again.')
+                    continue
+
+        except ValueError:
+            continue
+        if user_in != '':
+            break
+        else:
+            print(error_msg)
+            continue
     return name
 
 
 def get_workbook(fn):
     try:
         wb = openpyxl.load_workbook(fn)
-        return wb
-    except openpyxl.utils.exceptions.SheetTitleException:
-        print("Error: cannot find workbook ", fn)
+    except FileNotFoundError:
+        print("Error: cannot find workbook '" + fn + "'")
+        print("Exiting program.")
         sys.exit(-1)
+    return wb
 
 
 if __name__ == '__main__':
